@@ -220,12 +220,15 @@ def run_swarm(c: Candidate):
     }
 
 # ---------------- DATI DI MERCATO ----------------
-
 @st.cache_data(ttl=300, show_spinner=False)
 def get_market(limit: int, api_key: str = ""):
     session = get_session_with_retries()
     
-    headers = {}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "accept": "application/json"
+    }
+    
     params = {
         "vs_currency": "usd",
         "order": "market_cap_desc",
@@ -237,9 +240,8 @@ def get_market(limit: int, api_key: str = ""):
 
     if api_key:
         headers["x-cg-demo-api-key"] = api_key
-        url = f"{API_BASE_URL}/coins/markets"
-    else:
-        url = f"{API_BASE_URL}/coins/markets"
+
+    url = f"{API_BASE_URL}/coins/markets"
 
     response = session.get(url, params=params, headers=headers, timeout=TIMEOUT)
     response.raise_for_status()
