@@ -1,0 +1,42 @@
+from crewai import Agent, Crew, Process, Task
+
+# 1. Agente Scansione Intento
+intent_radar_agent = Agent(
+    role="Intent & Need Detector",
+    goal="Individuare post e conversazioni di utenti che esprimono un bisogno d'acquisto immediato",
+    backstory="""Sei uno specialista nell'analisi del linguaggio naturale (NLP) e social listening. 
+    Sai identificare quando una persona scrive online con la chiara intenzione di acquistare un servizio o prodotto.""",
+    verbose=True
+)
+
+# 2. Agente Verifica e Profilazione
+lead_verifier_agent = Agent(
+    role="Lead Qualification & Security Specialist",
+    goal="Verificare la genuinità della richiesta e scartare bot, spam o utenti non target",
+    backstory="""Esperto di data validation. Analizzi il contesto della richiesta per garantire 
+    che si tratti di un utente reale con un problema concreto e una disponibilità d'acquisto.""",
+    verbose=True
+)
+
+# 3. Agente Risposta / Ingaggio
+engagement_agent = Agent(
+    role="Conversion & Outreach Specialist",
+    goal="Formulare una risposta a valore aggiunto per ingaggiare l'utente e portarlo nel funnel di vendita",
+    backstory="""Copywriter persuasivo ed etico. Rispondi alle richieste degli utenti offrendo 
+    la soluzione perfetta al loro problema e guidandoli verso il contatto diretto.""",
+    verbose=True
+)
+
+# Esempio di Task
+task_find_leads = Task(
+    description="Analizza le discussioni online sul tema 'Organizzazione viaggi e alloggi' ed estrai solo le richieste con intento d'acquisto esplicito.",
+    expected_output="Lista di richieste filtrate con il livello di priorità e il bisogno specifico dell'utente.",
+    agent=intent_radar_agent
+)
+
+# Avvio dello Sciame
+crew = Crew(
+    agents=[intent_radar_agent, lead_verifier_agent, engagement_agent],
+    tasks=[task_find_leads],
+    process=Process.sequential
+)
